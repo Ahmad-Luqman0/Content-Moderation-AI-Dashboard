@@ -1,0 +1,6 @@
+{
+  "name": "Video & Audio Safety Analyzer",
+  "description": "Professional tool for analyzing video and audio safety, detecting sensitive content and providing detailed transcripts and segment analysis.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
