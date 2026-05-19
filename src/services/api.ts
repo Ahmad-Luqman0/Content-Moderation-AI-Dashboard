@@ -146,9 +146,9 @@ export const apiService = {
     const formData = new FormData();
     if (input.url) {
       try {
-        // Download the video temporarily via the local Vite proxy (which uses yt-dlp)
-        // This bypasses CORS and Hostinger datacenter blocks by downloading on your local residential IP
-        const proxyUrl = `/local-api/download?url=${encodeURIComponent(input.url)}`;
+        // Download the video temporarily via the frontend Vercel Serverless Function
+        // This downloads the video on Vercel's end (or locally via Vite) and sends it to your Hostinger backend
+        const proxyUrl = `/api/ytdl?url=${encodeURIComponent(input.url)}`;
         const response = await fetch(proxyUrl);
         
         if (!response.ok) {

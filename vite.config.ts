@@ -9,7 +9,7 @@ import os from 'os';
 const youtubeProxyPlugin = () => ({
   name: 'youtube-proxy',
   configureServer(server: any) {
-    server.middlewares.use('/local-api/download', (req: any, res: any) => {
+    server.middlewares.use('/api/ytdl', (req: any, res: any) => {
       const urlStr = req.url || '';
       const queryMatch = urlStr.match(/\?url=(.*)/);
       if (!queryMatch) {
