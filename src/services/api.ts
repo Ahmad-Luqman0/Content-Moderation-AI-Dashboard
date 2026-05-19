@@ -111,7 +111,7 @@ function normalizeAnalysisResponse(raw: any): AnalysisResponse {
     video: {
       status: videoStatus,
       detail: raw?.video?.detail,
-      result: videoStatus === 'ok'
+      result: videoStatus === 'ok'  
         ? {
             video: String(videoResult.video || raw?.file || 'remote_video'),
             classes: Array.isArray(videoResult.classes) ? videoResult.classes : [],
@@ -145,36 +145,7 @@ export const apiService = {
 
     const formData = new FormData();
     if (input.url) {
-      try {
-        // Download the video temporarily via the frontend Vercel Serverless Function
-        // This downloads the video on Vercel's end (or locally via Vite) and sends it to your Hostinger backend
-        const proxyUrl = `/api/ytdl?url=${encodeURIComponent(input.url)}`;
-        const response = await fetch(proxyUrl);
-        
-        if (!response.ok) {
-          const errText = await response.text();
-          throw new Error(`Failed to fetch video via local proxy: ${response.statusText} - ${errText}`);
-        }
-        
-        const blob = await response.blob();
-        
-        // Try to extract a filename from the URL, fallback to default
-        let filename = 'downloaded_video.mp4';
-        try {
-          const pathname = new URL(input.url).pathname;
-          const extractedName = pathname.substring(pathname.lastIndexOf('/') + 1);
-          if (extractedName && extractedName.includes('.')) {
-            filename = extractedName;
-          }
-        } catch (e) {
-          // Ignore URL parsing errors
-        }
-        
-        const file = new File([blob], filename, { type: blob.type || 'video/mp4' });
-        formData.append('file', file);
-      } catch (error: any) {
-        throw new Error('Failed to temporarily download video URL in the web app: ' + error.message);
-      }
+      formData.append('video_url', input.url);
     } else if (input.file) {
       formData.append('file', input.file);
     }
