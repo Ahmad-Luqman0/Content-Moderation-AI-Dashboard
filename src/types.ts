@@ -25,6 +25,7 @@ export interface SentenceResult {
   sentence: string;
   raw_label?: string;
   final_label?: string;
+  confidence_percent?: number;
   override_reason?: string | null;
   timestamp_start_ms?: number | null;
   timestamp_end_ms?: number | null;

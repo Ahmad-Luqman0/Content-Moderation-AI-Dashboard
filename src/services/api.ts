@@ -144,8 +144,40 @@ export const apiService = {
     if (input.text) return this.analyzeText(input.text);
 
     const formData = new FormData();
-    if (input.url) formData.append('video_url', input.url);
-    else if (input.file) formData.append('file', input.file);
+    if (input.url) {
+      try {
+        // Download the video temporarily via the local Vite proxy (which uses yt-dlp)
+        // This bypasses CORS and Hostinger datacenter blocks by downloading on your local residential IP
+        const proxyUrl = `/local-api/download?url=${encodeURIComponent(input.url)}`;
+        const response = await fetch(proxyUrl);
+        
+        if (!response.ok) {
+          const errText = await response.text();
+          throw new Error(`Failed to fetch video via local proxy: ${response.statusText} - ${errText}`);
+        }
+        
+        const blob = await response.blob();
+        
+        // Try to extract a filename from the URL, fallback to default
+        let filename = 'downloaded_video.mp4';
+        try {
+          const pathname = new URL(input.url).pathname;
+          const extractedName = pathname.substring(pathname.lastIndexOf('/') + 1);
+          if (extractedName && extractedName.includes('.')) {
+            filename = extractedName;
+          }
+        } catch (e) {
+          // Ignore URL parsing errors
+        }
+        
+        const file = new File([blob], filename, { type: blob.type || 'video/mp4' });
+        formData.append('file', file);
+      } catch (error: any) {
+        throw new Error('Failed to temporarily download video URL in the web app: ' + error.message);
+      }
+    } else if (input.file) {
+      formData.append('file', input.file);
+    }
     
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== null) formData.append(key, String(value));
