@@ -1,3 +1,5 @@
+import ytdl from '@distube/ytdl-core';
+
 export default async function handler(req, res) {
   const { url } = req.query;
   
@@ -6,8 +8,6 @@ export default async function handler(req, res) {
   }
 
   try {
-    const ytdl = require('@distube/ytdl-core');
-    
     // Check if valid YouTube URL
     if (!ytdl.validateURL(url)) {
       return res.status(400).json({ error: 'Invalid YouTube URL' });
